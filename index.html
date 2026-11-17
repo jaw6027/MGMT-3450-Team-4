@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#233c31" />
+    <title>Wishbones · Growth dashboard</title>
+    <link rel="icon" href="/src/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <script type="module" src="/src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to dashboard</a>
+    <aside class="sidebar">
+      <a href="#overview" class="brand"
+        ><span class="brand-mark">W</span
+        ><span>WISHBONES<small>OSTRICH FARM</small></span></a
+      >
+      <div class="workspace">YOUR WORKSPACE <span>→</span></div>
+      <nav aria-label="Main navigation">
+        <a href="#overview" data-page="overview"
+          ><span aria-hidden="true">◫</span> Overview</a
+        >
+        <a href="#contacts" data-page="contacts"
+          ><span aria-hidden="true">♧</span> Customers & leads</a
+        >
+        <a href="#pipeline" data-page="pipeline"
+          ><span aria-hidden="true">▥</span> Sales pipeline</a
+        >
+        <a href="#outreach" data-page="outreach"
+          ><span aria-hidden="true">→</span> Outreach & follow-ups</a
+        >
+        <a href="#marketing" data-page="marketing"
+          ><span aria-hidden="true">◎</span> Marketing</a
+        >
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="farm-note">
+          <span>GROWING WITH PURPOSE</span>
+          <p>Better relationships.<br />A stronger Wishbones.</p>
+          <div class="field-lines" aria-hidden="true"></div>
+        </div>
+        <div class="team">
+          <span class="avatar">W</span>
+          <div>Wishbones team<small>Student project workspace</small></div>
+        </div>
+      </div>
+    </aside>
+    <div class="shell">
+      <header class="topbar">
+        <span
+          >Workspace <span class="slash">/</span>
+          <strong id="breadcrumb">Overview</strong></span
+        ><span class="local-pill"><i></i> Saved on this browser</span>
+      </header>
+      <div class="demo-banner">
+        <span
+          ><strong>Demo workspace</strong> · Fictional sample businesses and
+          activity. No outreach is sent.</span
+        ><button id="about-demo" class="text-button">
+          About this prototype →
+        </button>
+      </div>
+      <main id="main" tabindex="-1"></main>
+      <footer>
+        WISHBONES OSTRICH FARM
+        <span>Thoughtful outreach. Meaningful growth.</span>
+      </footer>
+    </div>
+    <dialog id="editor" aria-labelledby="dialog-title">
+      <form id="editor-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow" id="dialog-kicker">WORKSPACE</p>
+            <h2 id="dialog-title"></h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            id="close-dialog"
+            aria-label="Close dialog"
+          >
+            ×
+          </button>
+        </div>
+        <div id="form-fields"></div>
+        <p id="form-error" class="error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" class="button secondary" id="cancel-dialog">
+            Cancel</button
+          ><button type="submit" class="button">Save record</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
