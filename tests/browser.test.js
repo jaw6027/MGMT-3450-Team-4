@@ -191,3 +191,26 @@ test("static server does not expose repository metadata or source-only files", a
   }
   assert.equal((await fetch(base + "/src/app.js")).status, 200);
 });
+
+test("dashboard loads under the GitHub Pages repository path", async () => {
+  const page = await browser.newPage();
+  const prefix = "/MGMT-3450-Team-4/";
+  const missing = [];
+  await page.route(base + "/**", async route => {
+    const path = new URL(route.request().url()).pathname;
+    if (!path.startsWith(prefix)) {
+      missing.push(path);
+      await route.fulfill({status: 404, body: "Outside the published project"});
+      return;
+    }
+    const response = await route.fetch({url: base + path.slice(prefix.length - 1)});
+    await route.fulfill({response});
+  });
+  await page.goto(base + prefix);
+  await page.getByRole("heading", {name: "A little insight. A lot of potential."}).waitFor();
+  assert.equal(await page.locator("body").evaluate(el => getComputedStyle(el).backgroundColor), "rgb(247, 246, 241)");
+  await page.getByRole("link", {name: "Marketing", exact: true}).click();
+  await page.getByRole("heading", {name: "Chef introduction series", exact: true}).waitFor();
+  assert.deepEqual(missing, []);
+  await page.close();
+});

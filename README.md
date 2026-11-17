@@ -69,4 +69,13 @@ Application files:
 - `src/style.css`: responsive Wishbones-inspired visual design
 - `server.js`: dependency-free local development server
 
-The browser application is static and can later be hosted on a suitable static host. GitHub stores the source code; committing or pushing it does not automatically publish a live dashboard. No deployment has been configured yet.
+## View online with GitHub Pages
+
+A repository administrator can publish this static prototype without installing anything:
+
+1. Open the repository on GitHub and select **Settings → Pages**.
+2. Under **Build and deployment**, choose **Deploy from a branch**.
+3. Choose **main** and **/ (root)**, then select **Save**.
+4. Wait for the Pages deployment to finish. Refresh the Pages settings and select **Visit site** using the URL GitHub displays.
+
+Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains fictional initial data. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
