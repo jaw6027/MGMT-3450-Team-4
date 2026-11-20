@@ -1085,3 +1085,7 @@ dialog::backdrop {
 .prospect-rationale { min-width: 260px; max-width: 380px; white-space: normal; }
 .research-sources { overflow-wrap: anywhere; }
 .research-sources li { margin-bottom: 6px; }
+
+.external-link { color: #365d40; text-decoration: underline; text-underline-offset: 3px; }
+.external-link:hover { color: #1d3c27; }
+.external-link:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
