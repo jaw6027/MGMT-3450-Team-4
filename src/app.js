@@ -116,7 +116,7 @@ function overview() {
       "Your relationships, next steps, and growth opportunities — in one place.",
       addContactButton,
     ) +
-    `<div class="stat-grid">${stat("Customer leads", m.leads, "Across food and nonfood customer groups", "♧")}${stat("Open pipeline", money(m.pipeline), `${m.open} qualified or proposal opportunities`, "▥")}${stat("Follow-ups due", m.due, "Due today or overdue", "◷", true)}${stat("Won opportunity value", money(m.won), "Sample closed sales · not payments", "◎")}</div>` +
+    `<div class="stat-grid">${stat("Customer leads", m.leads, "Across food and nonfood customer groups", "♧")}${stat("Open pipeline", money(m.pipeline), `${m.open} qualified or proposal opportunities`, "▥")}${stat("Follow-ups due", m.due, "Due today or overdue", "◷", true)}${stat("Won opportunity value", money(m.won), "Recorded deals · not payments", "◎")}</div>` +
     `<div class="two-col">${panel("Your sales pipeline", "A snapshot of every stage of the conversation.", `<div class="panel-body"><div class="pipeline-bars" role="img" aria-label="${esc(bars.map((b) => b.stage + ": " + b.count).join(", "))}">${bars.map((b) => `<div class="pipeline-bar"><strong>${b.count}</strong><div class="bar" data-height="${Math.max((b.count / max) * 110, 5)}"></div><small>${b.stage}</small></div>`).join("")}</div><div class="panel-summary"><span>From first hello to a lasting partnership</span><strong>${m.open} open opportunities</strong></div></div>`, '<a href="#pipeline" class="subtle-link">View pipeline →</a>')}${panel(
       "Who you’re connecting with",
       "Customer leads by business type.",
@@ -504,7 +504,7 @@ $("#about-demo").onclick = () => {
   $("#form-error").textContent = "";
   $("#editor-form .dialog-actions").classList.add("hidden");
   $("#form-fields").innerHTML =
-    "<p>This is a student-built sales and marketing prototype for Wishbones Ostrich Farm. Records marked (sample), initial campaigns, activity, and sales are fictional. California records labeled Public website research are real, uncontacted business prospects with source URLs and qualification notes. Their interest and purchasing requirements are unconfirmed.</p><p>Edits are saved only in this browser on this device. There are no shared accounts, shared database, email delivery, advertising integrations, or payment records. Clearing browser data removes saved edits.</p><p>Use the customer directory’s <strong>Export backup</strong> button to download a JSON copy of your records. Keep nonpublic business and customer details out of the GitHub repository. Before using live data, agree on access and confidentiality and add a secure shared backend.</p><p>Refresh the page to see saved changes. No outreach is sent when an activity is logged.</p>";
+    "<p>This is a student-built sales and marketing prototype for Wishbones Ostrich Farm. Initial marketing campaigns are illustrative. Ohio sample businesses and their linked sample outreach have been removed. California records labeled Public website research are real, uncontacted business prospects with source URLs and qualification notes. Their interest and purchasing requirements are unconfirmed.</p><p>Edits are saved only in this browser on this device. There are no shared accounts, shared database, email delivery, advertising integrations, or payment records. Clearing browser data removes saved edits.</p><p>Use the customer directory’s <strong>Export backup</strong> button to download a JSON copy of your records. Keep nonpublic business and customer details out of the GitHub repository. Before using live data, agree on access and confidentiality and add a secure shared backend.</p><p>Refresh the page to see saved changes. No outreach is sent when an activity is logged.</p>";
   $("#editor").showModal();
 };
 document.addEventListener("click", (e) => {
@@ -595,5 +595,5 @@ if (!storageError) {
 navigate();
 if (storageError)
   toast(
-    "Saved data could not be loaded. Showing sample data; existing storage has not been changed.",
+    "Saved data could not be loaded. Showing the initial workspace; existing storage has not been changed.",
   );

@@ -140,7 +140,7 @@ test("complete campaign → lead → outreach → won sale workflow persists and
   await page
     .getByRole("combobox", { name: "Filter follow-ups" })
     .selectOption("due");
-  assert.equal(await page.locator("#followup-results tbody tr").count(), 2);
+  assert.equal(await page.locator("#followup-results tbody tr").count(), 0);
   await page
     .getByRole("link", { name: "Customers & leads", exact: true })
     .click();
@@ -218,7 +218,7 @@ test("dashboard loads under the GitHub Pages repository path", async () => {
 test("researched prospects expose product fit, official contacts, sources, and enforce two-sentence explanations", async () => {
   const page = await browser.newPage();
   await page.goto(base + '/#contacts');
-  assert.equal(await page.locator('#contact-results tbody tr').count(), 106);
+  assert.equal(await page.locator('#contact-results tbody tr').count(), 100);
   await page.getByRole('combobox', { name: 'Filter by customer type' }).selectOption('Design & events');
   assert.equal(await page.locator('#contact-results tbody tr').count(), 4);
   await page.getByRole('combobox', { name: 'Filter by product category' }).selectOption('Feathers & Design');
@@ -240,7 +240,7 @@ test("researched prospects expose product fit, official contacts, sources, and e
   assert.equal(prospect.owner, 'Research team');
   assert.equal(prospect.whyPotential, 'It sells craft feathers. Wishbones could offer an additional supply option.');
   assert.ok(prospect.sourceUrls.length);
-  assert.equal(saved.contacts.length, 106);
+  assert.equal(saved.contacts.length, 100);
   // URL fields are user-editable; unsupported protocols must never create executable links.
   await page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem('wishbones.workspace.v1'));
@@ -249,5 +249,27 @@ test("researched prospects expose product fit, official contacts, sources, and e
   });
   await page.reload();
   assert.equal(await page.locator('a[href^="javascript:"]').count(), 0);
+  await page.close();
+});
+
+test("saved Ohio businesses are removed while California edits and outreach survive reload", async () => {
+  const { sampleWorkspace } = await import('./fixtures/sample-workspace.js');
+  const { californiaProspects } = await import('../src/prospects.js');
+  const old = sampleWorkspace();
+  const retained = { ...californiaProspects[0], owner: 'Saved California owner' };
+  old.contacts.push(retained);
+  old.activities.push({ id: 'saved-ca-activity', contactId: retained.id, date: '2026-11-19', channel: 'Other', result: 'Awaiting reply', notes: 'Saved California activity', owner: 'Saved California owner' });
+  const page = await browser.newPage();
+  await page.addInitScript(state => {
+    if (!localStorage.getItem('wishbones.workspace.v1')) localStorage.setItem('wishbones.workspace.v1', JSON.stringify(state));
+  }, old);
+  await page.goto(base + '/#contacts');
+  assert.equal(await page.locator('#contact-results tbody tr').count(), 100);
+  await page.reload();
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('wishbones.workspace.v1')));
+  assert.equal(saved.contacts.length, 100);
+  assert.equal(saved.contacts.find(c => c.id === retained.id).owner, 'Saved California owner');
+  assert.deepEqual(saved.activities.map(a => a.id), ['saved-ca-activity']);
+  assert.ok(saved.contacts.every(c => !old.contacts.slice(0, 6).some(o => o.id === c.id)));
   await page.close();
 });

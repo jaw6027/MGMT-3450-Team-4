@@ -1,7 +1,8 @@
+import { sampleWorkspace as seed } from "./fixtures/sample-workspace.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  seed,
+  seed as initialWorkspace,
   validateState,
   metrics,
   campaignStats,
@@ -80,7 +81,7 @@ test("California prospects are valid uncontacted records and retain source evide
   const { addCaliforniaProspects, californiaProspects } = await import('../src/prospects.js');
   const populated = addCaliforniaProspects(seed());
   assert.equal(validateState(populated), true);
-  assert.equal(populated.contacts.length, 106);
+  assert.equal(populated.contacts.length, 100);
   assert.equal(californiaProspects.length, 100);
   for (const c of californiaProspects) {
     assert.equal(c.stage, 'New');
@@ -91,7 +92,7 @@ test("California prospects are valid uncontacted records and retain source evide
     assert.match(c.notes, /https:\/\//);
     assert.match(c.notes, /not a customer; no contact made/);
   }
-  assert.deepEqual(populated.activities, seed().activities);
+  assert.deepEqual(populated.activities, []);
 });
 
 test("California population is repeatable and preserves saved edits and matching businesses", async () => {
@@ -100,7 +101,7 @@ test("California population is repeatable and preserves saved edits and matching
   original.contacts.push({ ...californiaProspects[0], id: 'user-added', owner: 'Existing owner' });
   const populated = addCaliforniaProspects(original);
   assert.equal(original.contacts.length, 7);
-  assert.equal(populated.contacts.length, 106);
+  assert.equal(populated.contacts.length, 100);
   assert.equal(populated.contacts.find(c => c.id === 'user-added').owner, 'Existing owner');
   populated.contacts.find(c => c.id === californiaProspects[1].id).business = 'Edited branch name';
   assert.equal(addCaliforniaProspects(populated), populated);
@@ -140,7 +141,7 @@ test("catalog upgrades add research columns without replacing saved decisions or
   prior[1].website = '';
   saved.contacts.push(...prior);
   const upgraded = addCaliforniaProspects(saved);
-  assert.equal(upgraded.contacts.length, 106);
+  assert.equal(upgraded.contacts.length, 100);
   const c = upgraded.contacts.find(c => c.id === prior[0].id);
   assert.equal(c.owner, 'Saved team owner');
   assert.equal(c.stage, 'Contacted');
@@ -150,4 +151,34 @@ test("catalog upgrades add research columns without replacing saved decisions or
   assert.equal(upgraded.contacts.find(c => c.id === prior[1].id).whyPotential, 'A saved rationale.');
   assert.equal(addCaliforniaProspects(upgraded), upgraded);
   assert.equal(saved.contacts.length, 15);
+});
+
+test("new workspaces contain no Ohio businesses or sample outreach", async () => {
+  const { addCaliforniaProspects } = await import('../src/prospects.js');
+  const fresh = initialWorkspace();
+  assert.deepEqual(fresh.contacts, []);
+  assert.deepEqual(fresh.activities, []);
+  const populated = addCaliforniaProspects(fresh);
+  assert.equal(populated.contacts.length, 100);
+  assert.equal(validateState(populated), true);
+  assert.equal(metrics(populated).won, 0);
+  assert.equal(metrics(populated).due, 0);
+});
+
+test("Ohio cleanup removes only matching locations and their linked outreach", async () => {
+  const { removeOhioBusinesses } = await import('../src/prospects.js');
+  const original = seed();
+  original.contacts[0].location = 'Columbus, CA';
+  original.contacts[0].notes = 'Saved relocation and notes';
+  original.contacts.push({ ...original.contacts[1], id: 'ohio-full', location: 'Columbus, Ohio 43215, USA' });
+  original.contacts.push({ ...original.contacts[1], id: 'california', location: 'Chino Hills, CA', business: 'OH Specialty Foods' });
+  original.activities.push({ ...original.activities[0], id: 'custom-oh-activity', contactId: 'ohio-full' });
+  const cleaned = removeOhioBusinesses(original);
+  assert.deepEqual(cleaned.contacts.map(c => c.id), ['c1', 'california']);
+  assert.equal(cleaned.contacts[0].notes, 'Saved relocation and notes');
+  assert.deepEqual(cleaned.activities.map(a => a.contactId), ['c1']);
+  assert.equal(cleaned.campaigns, original.campaigns);
+  assert.equal(validateState(cleaned), true);
+  assert.equal(original.contacts.length, 8);
+  assert.equal(removeOhioBusinesses(cleaned), cleaned);
 });

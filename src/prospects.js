@@ -2792,7 +2792,21 @@ export const californiaProspects = [
 
 // Enrich missing research fields only; never overwrite saved edits or sales activity.
 const researchFields = ["website", "contactUrl", "productCategory", "fitCategory", "whyPotential", "reviewedOn", "sourceUrls"];
+// Match the state at the end of a location, including optional ZIP/country.
+// Check location rather than historical sample IDs so relocated records survive.
+export function removeOhioBusinesses(state) {
+  const ohio = /(?:^|,\s*|\s)(?:OH|Ohio)(?:\s+\d{5}(?:-\d{4})?)?(?:,\s*(?:USA|United States))?\s*$/i;
+  const removed = new Set(state.contacts.filter(c => ohio.test(c.location.trim())).map(c => c.id));
+  if (!removed.size) return state;
+  return {
+    ...state,
+    contacts: state.contacts.filter(c => !removed.has(c.id)),
+    activities: state.activities.filter(a => !removed.has(a.contactId)),
+  };
+}
+
 export function addCaliforniaProspects(state) {
+  state = removeOhioBusinesses(state);
   const names = new Set(state.contacts.map(c => c.business.trim().toLowerCase()));
   const ids = new Set(state.contacts.map(c => c.id));
   let changed = false;

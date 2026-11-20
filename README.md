@@ -22,7 +22,7 @@ Open `http://localhost:3000` in a browser on the same computer. Use `PORT=4000 n
 5. Use **Sales pipeline** to move a lead through New, Contacted, Qualified, Proposal, Won, or Lost.
 6. Return to **Marketing** to see the campaign's attributed leads and opportunities. The overview and follow-up planner update from the same records.
 
-Records marked `(sample)`, sample people, sample email addresses, initial outreach, and deal values are fictional. Sample follow-up dates are relative to the first saved session. Business names are marked `(sample)` and addresses use `example.com`. No actual customer outreach or sales are represented.
+The initial marketing campaigns are illustrative. The six former Ohio sample businesses and their linked outreach have been removed; new workspaces start with researched California prospects and no recorded outreach or sales.
 
 ## Data and reporting
 
@@ -78,11 +78,11 @@ A repository administrator can publish this static prototype without installing 
 3. Choose **main** and **/ (root)**, then select **Save**.
 4. Wait for the Pages deployment to finish. Refresh the Pages settings and select **Visit site** using the URL GitHub displays.
 
-Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains labeled fictional samples and publicly researched prospect records. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
+Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains publicly researched prospect records and illustrative marketing campaigns. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
 
 ## Researched California prospects
 
-The dashboard includes **100 public-research prospect records**: 80 food-related prospects and 20 nonfood prospects, in addition to six fictional samples. The list includes the previous nine records. Some records represent related brands or regional operations, including the two Golden Gate operations; these are 100 business/venue prospects, not a claim of 100 unrelated corporate purchasing teams. Check for centralized purchasing before outreach.
+The dashboard includes **100 public-research prospect records**: 80 food-related prospects and 20 nonfood prospects, with no Ohio sample businesses. The list includes the previous nine records. Some records represent related brands or regional operations, including the two Golden Gate operations; these are 100 business/venue prospects, not a claim of 100 unrelated corporate purchasing teams. Check for centralized purchasing before outreach.
 
 | Business category | Prospects |
 | --- | ---: |
@@ -104,6 +104,6 @@ Public websites were reviewed **November 19, 2026 (Pacific)**. Source URLs and l
 
 All researched records start at **New**, with zero estimated value and no invented outreach, owner, follow-up, campaign attribution, or named buyer. Product interest remains **Other**; **Potential product category** records the research hypothesis separately. Check sourcing eligibility first, especially the California Foodshed policy at Marin Sun Farms and local/organic standards at other businesses. Pet, cosmetic, leather, and feather products require appropriate specifications and buyer approval; the catalog does not assess therapeutic effects or promise product suitability.
 
-The app continues to use browser localStorage, not a shared database. Loading the updated app adds missing prospects by stable ID or matching business name, and fills only previously absent research fields on existing researched records. It preserves saved decisions, edits, explicit blank research fields, sample records, campaigns, and activity. Unreadable or invalid browser storage is not overwritten. A previously downloaded standalone demo must be downloaded again to receive catalog and interface changes.
+The app continues to use browser localStorage, not a shared database. Loading the updated app adds missing prospects by stable ID or matching business name, and fills only previously absent research fields on existing researched records. It preserves retained businesses’ saved decisions, edits, explicit blank research fields, campaigns, and activity. Ohio business records (locations ending in OH or Ohio, optionally with a ZIP code/country) and only their linked outreach are removed when a valid saved workspace is loaded. Matching uses the current location rather than old sample IDs, so a business relocated outside Ohio is preserved. Unreadable or invalid browser storage is not overwritten. A previously downloaded standalone demo must be downloaded again to receive catalog and interface changes.
 
-The public prospect spreadsheet is [data/california-prospects.csv](data/california-prospects.csv). It contains only the 100 researched records; the six fictional samples are excluded. Opening or editing that spreadsheet does not update browser storage automatically.
+The public prospect spreadsheet is [data/california-prospects.csv](data/california-prospects.csv). It contains the 100 researched California records. Opening or editing that spreadsheet does not update browser storage automatically.
