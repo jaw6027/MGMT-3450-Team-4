@@ -80,8 +80,8 @@ test("California prospects are valid uncontacted records and retain source evide
   const { addCaliforniaProspects, californiaProspects } = await import('../src/prospects.js');
   const populated = addCaliforniaProspects(seed());
   assert.equal(validateState(populated), true);
-  assert.equal(populated.contacts.length, 10);
-  assert.equal(californiaProspects.length, 4);
+  assert.equal(populated.contacts.length, 15);
+  assert.equal(californiaProspects.length, 9);
   for (const c of californiaProspects) {
     assert.equal(c.stage, 'New');
     assert.equal(c.value, 0);
@@ -100,7 +100,7 @@ test("California population is repeatable and preserves saved edits and matching
   original.contacts.push({ ...californiaProspects[0], id: 'user-added', owner: 'Existing owner' });
   const populated = addCaliforniaProspects(original);
   assert.equal(original.contacts.length, 7);
-  assert.equal(populated.contacts.length, 10);
+  assert.equal(populated.contacts.length, 15);
   assert.equal(populated.contacts.find(c => c.id === 'user-added').owner, 'Existing owner');
   populated.contacts.find(c => c.id === californiaProspects[1].id).business = 'Edited branch name';
   assert.equal(addCaliforniaProspects(populated), populated);
