@@ -22,7 +22,7 @@ Open `http://localhost:3000` in a browser on the same computer. Use `PORT=4000 n
 5. Use **Sales pipeline** to move a lead through New, Contacted, Qualified, Proposal, Won, or Lost.
 6. Return to **Marketing** to see the campaign's attributed leads and opportunities. The overview and follow-up planner update from the same records.
 
-All initial businesses, people, email addresses, outreach, and deal values are fictional. Sample follow-up dates are relative to the first saved session. Business names are marked `(sample)` and addresses use `example.com`. No actual customer outreach or sales are represented.
+Records marked `(sample)`, sample people, sample email addresses, initial outreach, and deal values are fictional. Sample follow-up dates are relative to the first saved session. Business names are marked `(sample)` and addresses use `example.com`. No actual customer outreach or sales are represented.
 
 ## Data and reporting
 
@@ -79,3 +79,13 @@ A repository administrator can publish this static prototype without installing 
 4. Wait for the Pages deployment to finish. Refresh the Pages settings and select **Visit site** using the URL GitHub displays.
 
 Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains fictional initial data. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
+
+## Researched California prospects
+
+The dashboard adds four public-research prospect records to new and valid saved workspaces: Golden Gate Meat Company (Richmond), Golden Gate Wine Country Meats (Santa Rosa), Gelson’s Markets, and Bristol Farms. Richmond and Santa Rosa are related operations; coordinate purchasing research to avoid duplicate outreach. Records use stable IDs and business-name checks so reloads preserve edits and do not add duplicates. Existing samples, campaigns, and outreach remain intact. Unreadable or invalid browser storage is never overwritten by this addition.
+
+Business websites were reviewed November 19, 2026 (Pacific). Each prospect’s Notes lists source URLs, evidence of category fit, limitations, and the research date. All start at New with zero estimated value, no campaign attribution, no follow-up date, no assigned owner, no named buyer, and no fabricated outreach. Product interest is Other until confirmed. Published phone numbers and generic business inboxes are included where verified; blank fields mean no contact detail was confirmed. These businesses are potential buyers, not customers or confirmed ostrich buyers. Reconfirm details and qualification before outreach.
+
+Public sources: [Golden Gate](https://www.goldengatemeatcompany.com/), [game-meat program](https://www.goldengatemeatcompany.com/golden-gate-meat-company-wild-game-meats), [Gelson’s profile](https://www.gelsons.com/about-us/profile), [Gelson’s supplier submissions](https://www.gelsons.com/about-us/new-suppliers), and [Bristol Farms](https://www.bristolfarms.com/).
+
+The app still uses browser localStorage, not a shared database. Loading the updated app populates that browser’s workspace automatically. This does not alter a previously downloaded standalone HTML file.

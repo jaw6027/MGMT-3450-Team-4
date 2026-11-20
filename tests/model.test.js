@@ -75,3 +75,34 @@ test("saved state validation rejects broken references and invalid values", () =
   assert.equal(validateState(s), false);
   assert.equal(validateState(null), false);
 });
+
+test("California prospects are valid uncontacted records and retain source evidence", async () => {
+  const { addCaliforniaProspects, californiaProspects } = await import('../src/prospects.js');
+  const populated = addCaliforniaProspects(seed());
+  assert.equal(validateState(populated), true);
+  assert.equal(populated.contacts.length, 10);
+  assert.equal(californiaProspects.length, 4);
+  for (const c of californiaProspects) {
+    assert.equal(c.stage, 'New');
+    assert.equal(c.value, 0);
+    assert.equal(c.product, 'Other');
+    assert.equal(c.campaignId, '');
+    assert.equal(c.followUp, '');
+    assert.match(c.notes, /https:\/\//);
+    assert.match(c.notes, /not a customer; no contact made/);
+  }
+  assert.deepEqual(populated.activities, seed().activities);
+});
+
+test("California population is repeatable and preserves saved edits and matching businesses", async () => {
+  const { addCaliforniaProspects, californiaProspects } = await import('../src/prospects.js');
+  const original = seed();
+  original.contacts.push({ ...californiaProspects[0], id: 'user-added', owner: 'Existing owner' });
+  const populated = addCaliforniaProspects(original);
+  assert.equal(original.contacts.length, 7);
+  assert.equal(populated.contacts.length, 10);
+  assert.equal(populated.contacts.find(c => c.id === 'user-added').owner, 'Existing owner');
+  populated.contacts.find(c => c.id === californiaProspects[1].id).business = 'Edited branch name';
+  assert.equal(addCaliforniaProspects(populated), populated);
+  assert.equal(populated.contacts.find(c => c.id === californiaProspects[1].id).business, 'Edited branch name');
+});

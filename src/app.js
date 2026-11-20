@@ -1,3 +1,4 @@
+import { addCaliforniaProspects } from "./prospects.js";
 import {
   TYPES,
   STAGES,
@@ -476,7 +477,7 @@ $("#about-demo").onclick = () => {
   $("#form-error").textContent = "";
   $("#editor-form .dialog-actions").classList.add("hidden");
   $("#form-fields").innerHTML =
-    "<p>This is a student-built sales and marketing prototype for Wishbones Ostrich Farm. All initial businesses, contacts, campaigns, activity, and sales are fictional.</p><p>Edits are saved only in this browser on this device. There are no shared accounts, shared database, email delivery, advertising integrations, or payment records. Clearing browser data removes saved edits.</p><p>Use the customer directory’s <strong>Export backup</strong> button to download a JSON copy of your records. Keep nonpublic business and customer details out of the GitHub repository. Before using live data, agree on access and confidentiality and add a secure shared backend.</p><p>Refresh the page to see saved changes. No outreach is sent when an activity is logged.</p>";
+    "<p>This is a student-built sales and marketing prototype for Wishbones Ostrich Farm. Records marked (sample), initial campaigns, activity, and sales are fictional. California records labeled Public website research are real, uncontacted business prospects with source URLs and qualification notes. Their interest and purchasing requirements are unconfirmed.</p><p>Edits are saved only in this browser on this device. There are no shared accounts, shared database, email delivery, advertising integrations, or payment records. Clearing browser data removes saved edits.</p><p>Use the customer directory’s <strong>Export backup</strong> button to download a JSON copy of your records. Keep nonpublic business and customer details out of the GitHub repository. Before using live data, agree on access and confidentiality and add a secure shared backend.</p><p>Refresh the page to see saved changes. No outreach is sent when an activity is logged.</p>";
   $("#editor").showModal();
 };
 document.addEventListener("click", (e) => {
@@ -555,6 +556,11 @@ window.addEventListener("storage", (e) => {
     }
   }
 });
+// Do not write over storage that could not be read or validated.
+if (!storageError) {
+  const populated = addCaliforniaProspects(state);
+  if (populated !== state) commit(populated);
+}
 navigate();
 if (storageError)
   toast(
