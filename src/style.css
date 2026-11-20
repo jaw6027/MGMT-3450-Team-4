@@ -1080,3 +1080,8 @@ dialog::backdrop {
 }
 
 @media (max-width: 760px) { .demo-banner .text-button { display: block; } }
+
+/* Research explanations stay readable within the horizontally scrollable directory. */
+.prospect-rationale { min-width: 260px; max-width: 380px; white-space: normal; }
+.research-sources { overflow-wrap: anywhere; }
+.research-sources li { margin-bottom: 6px; }

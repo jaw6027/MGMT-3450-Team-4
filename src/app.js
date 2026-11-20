@@ -3,6 +3,8 @@ import {
   TYPES,
   STAGES,
   PRODUCTS,
+  PRODUCT_CATEGORIES,
+  validRationale,
   money,
   today,
   dateLabel,
@@ -35,6 +37,7 @@ try {
 let page = "overview",
   search = "",
   typeFilter = "",
+  productFilter = "",
   stageFilter = "",
   followFilter = "",
   toastTimer;
@@ -63,6 +66,13 @@ function commit(next) {
     return false;
   }
 }
+function safeWebLink(value, label) {
+  try {
+    const url = new URL(value);
+    if (!["https:", "http:"].includes(url.protocol)) return esc(label || value);
+    return `<a href="${esc(url.href)}" target="_blank" rel="noopener noreferrer">${esc(label || value)}</a>`;
+  } catch { return esc(value || "Not recorded"); }
+}
 const badge = (stage) =>
   `<span class="badge ${esc(stage.toLowerCase())}">${esc(stage)}</span>`;
 const empty = (text = "No records yet. Add one to get started.") =>
@@ -85,8 +95,9 @@ function panel(title, subtitle, body, link = "") {
 function contactTable(contacts, compact = false) {
   if (!contacts.length)
     return empty("No customer leads match. Add a lead or change your filters.");
-  return `<div class="table-wrap"><table><thead><tr><th>Business / contact</th><th>Customer type</th><th>Stage</th>${compact ? "" : "<th>Owner</th>"}<th>Next follow-up</th><th>Action</th></tr></thead><tbody>${contacts.map((c) => `<tr><td>${contactButton(c)}<small>${esc(c.person || "Contact not identified")}</small></td><td>${esc(c.type)}</td><td>${badge(c.stage)}</td>${compact ? "" : `<td>${esc(c.owner || "Unassigned")}</td>`}<td class="${isDue(c) ? "due" : ""}">${esc(dateLabel(c.followUp))}${isDue(c) ? "<small>Due for follow-up</small>" : ""}</td><td><button class="row-action" data-log="${esc(c.id)}">Log outreach</button></td></tr>`).join("")}</tbody></table></div>`;
+  return `<div class="table-wrap"><table><thead><tr><th>Business / contact</th><th>Customer type</th>${compact ? "" : "<th>Potential product</th><th>Why this business could be a customer</th>"}<th>Stage</th>${compact ? "" : "<th>Owner</th>"}<th>Next follow-up</th><th>Action</th></tr></thead><tbody>${contacts.map((c) => `<tr><td>${contactButton(c)}<small>${esc(c.person || "Contact not identified")}</small>${compact ? "" : `<small>${esc(c.location || "Location not recorded")}</small>${c.website ? `<small>${safeWebLink(c.website, "Official website")}</small>` : ""}${c.email ? `<small>${esc(c.email)}</small>` : ""}${c.phone ? `<small>${esc(c.phone)}</small>` : ""}${c.contactUrl ? `<small>${safeWebLink(c.contactUrl, "Public business contact")}</small>` : ""}`}</td><td>${esc(c.type)}${compact ? "" : `<small>${esc(c.fitCategory || "Fit not assessed")}</small>`}</td>${compact ? "" : `<td>${esc(c.productCategory || "Not assessed")}<small>Proposed fit · unconfirmed</small></td><td class="prospect-rationale">${esc(c.whyPotential || "Not assessed")}</td>`}<td>${badge(c.stage)}</td>${compact ? "" : `<td>${esc(c.owner || "Unassigned")}</td>`}<td class="${isDue(c) ? "due" : ""}">${esc(dateLabel(c.followUp))}${isDue(c) ? "<small>Due for follow-up</small>" : ""}</td><td><button class="row-action" data-log="${esc(c.id)}">Log outreach</button></td></tr>`).join("")}</tbody></table></div>`;
 }
+
 function overview() {
   const m = metrics(state),
     total = state.contacts.length;
@@ -105,7 +116,7 @@ function overview() {
       "Your relationships, next steps, and growth opportunities — in one place.",
       addContactButton,
     ) +
-    `<div class="stat-grid">${stat("Customer leads", m.leads, "Across four target customer groups", "♧")}${stat("Open pipeline", money(m.pipeline), `${m.open} qualified or proposal opportunities`, "▥")}${stat("Follow-ups due", m.due, "Due today or overdue", "◷", true)}${stat("Won opportunity value", money(m.won), "Sample closed sales · not payments", "◎")}</div>` +
+    `<div class="stat-grid">${stat("Customer leads", m.leads, "Across food and nonfood customer groups", "♧")}${stat("Open pipeline", money(m.pipeline), `${m.open} qualified or proposal opportunities`, "▥")}${stat("Follow-ups due", m.due, "Due today or overdue", "◷", true)}${stat("Won opportunity value", money(m.won), "Sample closed sales · not payments", "◎")}</div>` +
     `<div class="two-col">${panel("Your sales pipeline", "A snapshot of every stage of the conversation.", `<div class="panel-body"><div class="pipeline-bars" role="img" aria-label="${esc(bars.map((b) => b.stage + ": " + b.count).join(", "))}">${bars.map((b) => `<div class="pipeline-bar"><strong>${b.count}</strong><div class="bar" data-height="${Math.max((b.count / max) * 110, 5)}"></div><small>${b.stage}</small></div>`).join("")}</div><div class="panel-summary"><span>From first hello to a lasting partnership</span><strong>${m.open} open opportunities</strong></div></div>`, '<a href="#pipeline" class="subtle-link">View pipeline →</a>')}${panel(
       "Who you’re connecting with",
       "Customer leads by business type.",
@@ -137,11 +148,12 @@ function filteredContacts() {
   return state.contacts.filter(
     (c) =>
       (!search ||
-        [c.business, c.person, c.email, c.location, c.owner, c.product]
+        [c.business, c.person, c.email, c.location, c.owner, c.product, c.productCategory, c.fitCategory, c.whyPotential]
           .join(" ")
           .toLowerCase()
           .includes(search.toLowerCase())) &&
       (!typeFilter || c.type === typeFilter) &&
+      (!productFilter || c.productCategory === productFilter) &&
       (!stageFilter || c.stage === stageFilter),
   );
 }
@@ -152,7 +164,7 @@ function contacts() {
       "Keep every prospect, contact, and next step connected.",
       `<button class="button secondary" id="export-data">↓ Export backup</button>${addContactButton}`,
     ) +
-    `<div class="toolbar"><input id="search" type="search" aria-label="Search customer leads" placeholder="Search business, contact, location…" value="${esc(search)}"><select id="type-filter" aria-label="Filter by customer type"><option value="">All customer types</option>${options(TYPES, typeFilter)}</select><select id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option>${options(STAGES, stageFilter)}</select></div><section class="panel"><div class="panel-head"><h2>Customer directory</h2><span class="subtitle" id="contact-count">${filteredContacts().length} leads</span></div><div id="contact-results">${contactTable(filteredContacts())}</div></section><div class="callout">A lead is a potential customer. An opportunity is a qualified sales discussion. Use the sales stage to show how each relationship is progressing.</div>`
+    `<div class="toolbar"><input id="search" type="search" aria-label="Search customer leads" placeholder="Search business, contact, location…" value="${esc(search)}"><select id="type-filter" aria-label="Filter by customer type"><option value="">All customer types</option>${options(TYPES, typeFilter)}</select><select id="product-filter" aria-label="Filter by product category"><option value="">All product categories</option>${options(PRODUCT_CATEGORIES, productFilter)}</select><select id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option>${options(STAGES, stageFilter)}</select></div><section class="panel"><div class="panel-head"><h2>Customer directory</h2><span class="subtitle" id="contact-count">${filteredContacts().length} leads</span></div><div id="contact-results">${contactTable(filteredContacts())}</div></section><div class="callout">A lead is a potential customer. An opportunity is a qualified sales discussion. Use the sales stage to show how each relationship is progressing.</div>`
   );
 }
 function pipeline() {
@@ -304,6 +316,11 @@ function openForm(mode, id = "") {
     fields =
       field("Business name", "business", c.business, "text", true, true) +
       select("Customer type", "type", TYPES, c.type) +
+      field("Official website", "website", c.website, "url") +
+      field("Public business contact page", "contactUrl", c.contactUrl, "url") +
+      `<label class="field">Potential product category<select name="productCategory"><option value="">Not assessed</option>${options(PRODUCT_CATEGORIES, c.productCategory)}</select></label>` +
+      field("Business fit category", "fitCategory", c.fitCategory) +
+      `<label class="field full">Why this business could be a customer (max 2 sentences)<textarea name="whyPotential" maxlength="600">${esc(c.whyPotential || "")}</textarea></label>` +
       field("Contact person", "person", c.person) +
       field("Email", "email", c.email, "email") +
       field("Phone", "phone", c.phone, "tel") +
@@ -385,6 +402,12 @@ function showDetail(id) {
   $("#form-error").textContent = "";
   $("#editor-form .dialog-actions").classList.add("hidden");
   const attrs = [
+    ["Official website", c.website],
+    ["Public business contact page", c.contactUrl],
+    ["Potential product category", c.productCategory],
+    ["Business fit category", c.fitCategory],
+    ["Why this business could be a customer", c.whyPotential],
+    ["Public sources reviewed", c.reviewedOn],
     ["Contact person", c.person],
     ["Customer type", c.type],
     ["Email", c.email],
@@ -405,7 +428,7 @@ function showDetail(id) {
     ["Notes", c.notes],
   ];
   $("#form-fields").innerHTML =
-    `${badge(c.stage)}<div class="details-grid">${attrs.map(([k, v]) => `<div class="detail-item ${["Notes", "Next step"].includes(k) ? "detail-wide" : ""}"><small>${k}</small><span>${esc(v || "Not recorded")}</span></div>`).join("")}</div><div class="detail-actions"><button type="button" class="button secondary" data-edit-contact="${esc(id)}">Edit customer lead</button><button type="button" class="button" data-log="${esc(id)}">＋ Log outreach</button></div><div class="detail-activity"><h3>Outreach history</h3>${activityList(state.activities.filter((a) => a.contactId === id).sort((a, b) => b.date.localeCompare(a.date)))}</div>`;
+    `${badge(c.stage)}<div class="details-grid">${attrs.map(([k, v]) => `<div class="detail-item ${["Notes", "Next step", "Why this business could be a customer"].includes(k) ? "detail-wide" : ""}"><small>${k}</small><span>${["Official website", "Public business contact page"].includes(k) ? safeWebLink(v) : esc(v || "Not recorded")}</span></div>`).join("")}</div>${c.sourceUrls?.length ? `<div class="research-sources"><h3>Public research sources</h3><ul>${c.sourceUrls.map(url => `<li>${safeWebLink(url)}</li>`).join("")}</ul></div>` : ""}<div class="detail-actions"><button type="button" class="button secondary" data-edit-contact="${esc(id)}">Edit customer lead</button><button type="button" class="button" data-log="${esc(id)}">＋ Log outreach</button></div><div class="detail-activity"><h3>Outreach history</h3>${activityList(state.activities.filter((a) => a.contactId === id).sort((a, b) => b.date.localeCompare(a.date)))}</div>`;
   if (!$("#editor").open) $("#editor").showModal();
 }
 $("#editor-form").addEventListener("submit", (e) => {
@@ -425,11 +448,15 @@ $("#editor-form").addEventListener("submit", (e) => {
   }
   const next = structuredClone(state);
   if (formMode === "contact") {
+    if (!validRationale(values.whyPotential || "")) {
+      $("#form-error").textContent = "Explain the potential fit in no more than two sentences (600 characters maximum).";
+      return;
+    }
     values.value = Number(values.value);
     if (!Number.isFinite(values.value) || values.value < 0) return;
     const record = { ...values, id: editId || crypto.randomUUID() };
     const index = next.contacts.findIndex((c) => c.id === editId);
-    if (index >= 0) next.contacts[index] = record;
+    if (index >= 0) next.contacts[index] = { ...next.contacts[index], ...record };
     else next.contacts.push(record);
   } else if (formMode === "campaign") {
     values.budget = Number(values.budget);
@@ -516,6 +543,10 @@ function updateContacts() {
 document.addEventListener("change", (e) => {
   if (e.target.id === "type-filter") {
     typeFilter = e.target.value;
+    updateContacts();
+  }
+  if (e.target.id === "product-filter") {
+    productFilter = e.target.value;
     updateContacts();
   }
   if (e.target.id === "stage-filter") {

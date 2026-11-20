@@ -78,16 +78,32 @@ A repository administrator can publish this static prototype without installing 
 3. Choose **main** and **/ (root)**, then select **Save**.
 4. Wait for the Pages deployment to finish. Refresh the Pages settings and select **Visit site** using the URL GitHub displays.
 
-Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains fictional initial data. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
+Asset paths support GitHub Pages project URLs. Committing the code alone does not enable Pages; an administrator must save the setting. The public site contains labeled fictional samples and publicly researched prospect records. Edits stay in each visitor’s browser, and no private records should be committed to the public repository.
 
 ## Researched California prospects
 
-The dashboard adds nine public-research prospect records to new and valid saved workspaces: Golden Gate Meat Company (Richmond), Golden Gate Wine Country Meats (Santa Rosa), Gelson’s Markets, Bristol Farms, Olivier’s Butchery, Fatted Calf, Draeger’s Market, Newport Meat & Seafood, and Marin Sun Farms. Richmond and Santa Rosa are related operations; coordinate purchasing research to avoid duplicate outreach. Records use stable IDs and business-name checks so reloads preserve edits and do not add duplicates. Existing samples, campaigns, and outreach remain intact. Unreadable or invalid browser storage is never overwritten by this addition.
+The dashboard includes **100 public-research prospect records**: 80 food-related prospects and 20 nonfood prospects, in addition to six fictional samples. The list includes the previous nine records. Some records represent related brands or regional operations, including the two Golden Gate operations; these are 100 business/venue prospects, not a claim of 100 unrelated corporate purchasing teams. Check for centralized purchasing before outreach.
 
-Business websites were reviewed November 19, 2026 (Pacific). Each prospect’s Notes lists source URLs, evidence of category fit, limitations, and the research date. All start at New with zero estimated value, no campaign attribution, no follow-up date, no assigned owner, no named buyer, and no fabricated outreach. Product interest is Other until confirmed. Published phone numbers and generic business inboxes are included where verified; blank fields mean no contact detail was confirmed. These businesses are potential buyers, not customers or confirmed ostrich buyers. Reconfirm details and qualification before outreach.
+| Business category | Prospects |
+| --- | ---: |
+| Restaurants | 50 |
+| Specialty butcher shops | 13 |
+| Grocery stores | 10 |
+| Food distributors | 7 |
+| Pet retailers / pet-food businesses | 8 |
+| Leather-goods makers | 2 |
+| Feather suppliers / event design | 4 |
+| Body-care manufacturers | 3 |
+| Gift and décor retailers | 3 |
 
-Public sources: [Golden Gate](https://www.goldengatemeatcompany.com/), [game-meat program](https://www.goldengatemeatcompany.com/golden-gate-meat-company-wild-game-meats), [Gelson’s profile](https://www.gelsons.com/about-us/profile), [Gelson’s supplier submissions](https://www.gelsons.com/about-us/new-suppliers), and [Bristol Farms](https://www.bristolfarms.com/).
+Each record has an official website, location, public business contact route (phone, inbox, or contact page), potential product category, business fit category, and a separate **Why this business could be a customer** field. Explanations are limited to two sentences and explain a proposed benefit; they do not claim the business wants to buy. Website and source links are clickable in the directory and detail dialog. Search includes category and fit explanations; filters support business type, potential product category, and sales stage. The explanation field also enforces the two-sentence / 600-character limit when edited.
 
-The app still uses browser localStorage, not a shared database. Loading the updated app populates that browser’s workspace automatically. This does not alter a previously downloaded standalone HTML file.
+Product proposals cover premium ostrich meats (72 records), culinary eggs (8), pet products (8), leather goods (2), feathers and design (4), oils and body care (3), and decorative eggshells (3). The screenshot's research/commercial line and coming-soon merchandise do not have assigned buyers: no unsupported research demand or live merchandise availability is implied. Manufacturers are conditional leads; check whether Wishbones can supply the required ingredient or material format rather than assuming it offers raw leather or cosmetic-grade oil.
 
-The five added companies were also reviewed November 19, 2026 (Pacific). Newport’s official specialty-products page lists exotic meat and wild game, with location-specific availability. Olivier’s, Fatted Calf, and Draeger’s are exploratory specialty retail prospects. Marin Sun Farms is explicitly a conditional prospect: its California Foodshed sourcing rule may exclude Wishbones, and eligibility must be checked first. Source URLs and contact limitations are included in each record’s Notes. No company was contacted.
+Public websites were reviewed **November 19, 2026 (Pacific)**. Source URLs and limitations appear in Notes and the source list. Pages returning access errors, unrelated parked domains, and explicit closure notices were excluded from new additions. A working website is evidence of the published business offering, not an independent confirmation of current operations, buyer identity, available budget, or acceptance of new suppliers. Public telephone numbers, generic inboxes, and forms are general business routes and may need to refer you to purchasing; no messages were sent and forms were not submitted. Blank email/phone fields mean that detail was not confirmed; use the linked public contact page where provided. Some official pages disagree on details, which is noted rather than silently resolved.
+
+All researched records start at **New**, with zero estimated value and no invented outreach, owner, follow-up, campaign attribution, or named buyer. Product interest remains **Other**; **Potential product category** records the research hypothesis separately. Check sourcing eligibility first, especially the California Foodshed policy at Marin Sun Farms and local/organic standards at other businesses. Pet, cosmetic, leather, and feather products require appropriate specifications and buyer approval; the catalog does not assess therapeutic effects or promise product suitability.
+
+The app continues to use browser localStorage, not a shared database. Loading the updated app adds missing prospects by stable ID or matching business name, and fills only previously absent research fields on existing researched records. It preserves saved decisions, edits, explicit blank research fields, sample records, campaigns, and activity. Unreadable or invalid browser storage is not overwritten. A previously downloaded standalone demo must be downloaded again to receive catalog and interface changes.
+
+The public prospect spreadsheet is [data/california-prospects.csv](data/california-prospects.csv). It contains only the 100 researched records; the six fictional samples are excluded. Opening or editing that spreadsheet does not update browser storage automatically.

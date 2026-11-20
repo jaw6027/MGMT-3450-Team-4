@@ -214,3 +214,40 @@ test("dashboard loads under the GitHub Pages repository path", async () => {
   assert.deepEqual(missing, []);
   await page.close();
 });
+
+test("researched prospects expose product fit, official contacts, sources, and enforce two-sentence explanations", async () => {
+  const page = await browser.newPage();
+  await page.goto(base + '/#contacts');
+  assert.equal(await page.locator('#contact-results tbody tr').count(), 106);
+  await page.getByRole('combobox', { name: 'Filter by customer type' }).selectOption('Design & events');
+  assert.equal(await page.locator('#contact-results tbody tr').count(), 4);
+  await page.getByRole('combobox', { name: 'Filter by product category' }).selectOption('Feathers & Design');
+  await page.getByRole('button', { name: 'Moonlight Feather', exact: true }).click();
+  await page.getByRole('heading', { name: 'Public research sources' }).waitFor();
+  assert.ok(await page.locator('#editor a[href="https://moonlightfeather.com/policies/contact-information"]').count());
+  assert.match(await page.locator('#editor').textContent(), /supplementary feather source/);
+  await page.getByRole('button', { name: 'Edit customer lead', exact: true }).click();
+  const rationale = page.getByLabel('Why this business could be a customer (max 2 sentences)');
+  await rationale.fill('First sentence. Second sentence. Third sentence.');
+  await page.getByRole('button', { name: 'Save record', exact: true }).click();
+  assert.match(await page.locator('#form-error').textContent(), /no more than two sentences/);
+  await rationale.fill('It sells craft feathers. Wishbones could offer an additional supply option.');
+  await page.getByLabel('Team owner').fill('Research team');
+  await page.getByRole('button', { name: 'Save record', exact: true }).click();
+  await page.reload();
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('wishbones.workspace.v1')));
+  const prospect = saved.contacts.find(c => c.business === 'Moonlight Feather');
+  assert.equal(prospect.owner, 'Research team');
+  assert.equal(prospect.whyPotential, 'It sells craft feathers. Wishbones could offer an additional supply option.');
+  assert.ok(prospect.sourceUrls.length);
+  assert.equal(saved.contacts.length, 106);
+  // URL fields are user-editable; unsupported protocols must never create executable links.
+  await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem('wishbones.workspace.v1'));
+    state.contacts.find(c => c.business === 'Moonlight Feather').website = 'javascript:alert(1)';
+    localStorage.setItem('wishbones.workspace.v1', JSON.stringify(state));
+  });
+  await page.reload();
+  assert.equal(await page.locator('a[href^="javascript:"]').count(), 0);
+  await page.close();
+});

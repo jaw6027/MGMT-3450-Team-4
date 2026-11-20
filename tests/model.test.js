@@ -80,8 +80,8 @@ test("California prospects are valid uncontacted records and retain source evide
   const { addCaliforniaProspects, californiaProspects } = await import('../src/prospects.js');
   const populated = addCaliforniaProspects(seed());
   assert.equal(validateState(populated), true);
-  assert.equal(populated.contacts.length, 15);
-  assert.equal(californiaProspects.length, 9);
+  assert.equal(populated.contacts.length, 106);
+  assert.equal(californiaProspects.length, 100);
   for (const c of californiaProspects) {
     assert.equal(c.stage, 'New');
     assert.equal(c.value, 0);
@@ -100,9 +100,54 @@ test("California population is repeatable and preserves saved edits and matching
   original.contacts.push({ ...californiaProspects[0], id: 'user-added', owner: 'Existing owner' });
   const populated = addCaliforniaProspects(original);
   assert.equal(original.contacts.length, 7);
-  assert.equal(populated.contacts.length, 15);
+  assert.equal(populated.contacts.length, 106);
   assert.equal(populated.contacts.find(c => c.id === 'user-added').owner, 'Existing owner');
   populated.contacts.find(c => c.id === californiaProspects[1].id).business = 'Edited branch name';
   assert.equal(addCaliforniaProspects(populated), populated);
   assert.equal(populated.contacts.find(c => c.id === californiaProspects[1].id).business, 'Edited branch name');
+});
+
+test("all 100 prospects have organized public sources, contact routes, and concise benefit explanations", async () => {
+  const { californiaProspects } = await import('../src/prospects.js');
+  const { PRODUCT_CATEGORIES, validRationale } = await import('../src/model.js');
+  assert.equal(new Set(californiaProspects.map(c => c.id)).size, 100);
+  assert.equal(new Set(californiaProspects.map(c => c.business.toLowerCase())).size, 100);
+  for (const c of californiaProspects) {
+    assert.equal(new URL(c.website).protocol, 'https:');
+    assert.ok(c.email || c.phone || c.contactUrl, c.business);
+    assert.ok(c.fitCategory && c.whyPotential && c.reviewedOn, c.business);
+    assert.ok(PRODUCT_CATEGORIES.includes(c.productCategory), c.business);
+    assert.equal(validRationale(c.whyPotential), true, c.business);
+    assert.ok(c.sourceUrls.length > 0, c.business);
+    for (const url of c.sourceUrls) assert.equal(new URL(url).protocol, 'https:');
+  }
+  assert.equal(californiaProspects.filter(c => ['Restaurant', 'Grocery', 'Specialty butcher', 'Distributor'].includes(c.type)).length, 80);
+  assert.equal(validRationale('One sentence. Two sentences. Three sentences.'), false);
+  assert.equal(validRationale('x'.repeat(601)), false);
+});
+
+test("catalog upgrades add research columns without replacing saved decisions or explicit edits", async () => {
+  const { californiaProspects, addCaliforniaProspects } = await import('../src/prospects.js');
+  const saved = seed();
+  const prior = structuredClone(californiaProspects.slice(0, 9));
+  for (const c of prior) {
+    for (const key of ['website', 'contactUrl', 'productCategory', 'fitCategory', 'whyPotential', 'reviewedOn', 'sourceUrls']) delete c[key];
+  }
+  prior[0].stage = 'Contacted';
+  prior[0].owner = 'Saved team owner';
+  prior[0].notes = 'User research';
+  prior[1].whyPotential = 'A saved rationale.';
+  prior[1].website = '';
+  saved.contacts.push(...prior);
+  const upgraded = addCaliforniaProspects(saved);
+  assert.equal(upgraded.contacts.length, 106);
+  const c = upgraded.contacts.find(c => c.id === prior[0].id);
+  assert.equal(c.owner, 'Saved team owner');
+  assert.equal(c.stage, 'Contacted');
+  assert.equal(c.notes, 'User research');
+  assert.equal(c.website, californiaProspects[0].website);
+  assert.equal(upgraded.contacts.find(c => c.id === prior[1].id).website, '');
+  assert.equal(upgraded.contacts.find(c => c.id === prior[1].id).whyPotential, 'A saved rationale.');
+  assert.equal(addCaliforniaProspects(upgraded), upgraded);
+  assert.equal(saved.contacts.length, 15);
 });

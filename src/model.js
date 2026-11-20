@@ -3,6 +3,11 @@ export const TYPES = [
   "Specialty butcher",
   "Grocery",
   "Distributor",
+  "Pet retailer",
+  "Leather goods",
+  "Design & events",
+  "Body care",
+  "Gifts & decor",
 ];
 export const STAGES = [
   "New",
@@ -18,6 +23,16 @@ export const PRODUCTS = [
   "Domestic supply",
   "Other",
 ];
+export const PRODUCT_CATEGORIES = [
+  "Premium Ostrich Meats", "Culinary Ostrich Eggs", "Leather & Luxury Goods",
+  "Oils & Body Care", "Feathers & Design", "Decorative Eggshells",
+  "Pet & Specialty Products", "Research & Commercial",
+];
+export function validRationale(value) {
+  if (typeof value !== "string" || value.length > 600) return false;
+  return [...new Intl.Segmenter("en", { granularity: "sentence" }).segment(value)]
+    .filter(part => part.segment.trim()).length <= 2;
+}
 export const money = (value) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -289,6 +304,9 @@ export function validateState(s) {
           "followUp",
           "notes",
         ].every((k) => str(c[k])) &&
+        ["website", "contactUrl", "productCategory", "fitCategory", "whyPotential", "reviewedOn"].every(k => c[k] === undefined || str(c[k])) &&
+        (c.whyPotential === undefined || validRationale(c.whyPotential)) &&
+        (c.sourceUrls === undefined || (Array.isArray(c.sourceUrls) && c.sourceUrls.every(str))) &&
         TYPES.includes(c.type) &&
         STAGES.includes(c.stage) &&
         Number.isFinite(c.value) &&
