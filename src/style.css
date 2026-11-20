@@ -1089,3 +1089,7 @@ dialog::backdrop {
 .external-link { color: #365d40; text-decoration: underline; text-underline-offset: 3px; }
 .external-link:hover { color: #1d3c27; }
 .external-link:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+.customer-type-group + .customer-type-group { border-top: 1px solid #dce0d2; margin-top: 24px; }
+.customer-type-group > h3 { display: flex; align-items: center; gap: 16px; padding: 16px 20px; margin: 0; font-size: 17px; }
+.customer-type-group > h3 span { color: var(--muted); font-size: 12px; font-weight: normal; }

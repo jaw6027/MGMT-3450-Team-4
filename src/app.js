@@ -157,14 +157,23 @@ function filteredContacts() {
       (!stageFilter || c.stage === stageFilter),
   );
 }
+function groupedContactDirectory(contacts) {
+  if (!contacts.length) return contactTable(contacts);
+  const labels = { Restaurant: "Restaurants", "Specialty butcher": "Specialty butcher shops", Grocery: "Grocery stores", Distributor: "Distributors", "Pet retailer": "Pet retailers", "Leather goods": "Leather goods", "Design & events": "Design & events", "Body care": "Body care", "Gifts & decor": "Gifts & décor" };
+  return TYPES.map(type => {
+    const group = contacts.filter(c => c.type === type).sort((a, b) => a.business.localeCompare(b.business));
+    if (!group.length) return "";
+    return `<section class="customer-type-group" aria-label="${esc(labels[type])}"><h3>${esc(labels[type])}<span>${group.length} ${group.length === 1 ? "lead" : "leads"}</span></h3>${contactTable(group)}</section>`;
+  }).join("");
+}
 function contacts() {
   return (
     heading(
       "Good relationships start here.",
-      "Keep every prospect, contact, and next step connected.",
+      "Browse prospects by customer type, alphabetized within each group.",
       `<button class="button secondary" id="export-data">↓ Export backup</button>${addContactButton}`,
     ) +
-    `<div class="toolbar"><input id="search" type="search" aria-label="Search customer leads" placeholder="Search business, contact, location…" value="${esc(search)}"><select id="type-filter" aria-label="Filter by customer type"><option value="">All customer types</option>${options(TYPES, typeFilter)}</select><select id="product-filter" aria-label="Filter by product category"><option value="">All product categories</option>${options(PRODUCT_CATEGORIES, productFilter)}</select><select id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option>${options(STAGES, stageFilter)}</select></div><section class="panel"><div class="panel-head"><h2>Customer directory</h2><span class="subtitle" id="contact-count">${filteredContacts().length} leads</span></div><div id="contact-results">${contactTable(filteredContacts())}</div></section><div class="callout">A lead is a potential customer. An opportunity is a qualified sales discussion. Use the sales stage to show how each relationship is progressing.</div>`
+    `<div class="toolbar"><input id="search" type="search" aria-label="Search customer leads" placeholder="Search business, contact, location…" value="${esc(search)}"><select id="type-filter" aria-label="Filter by customer type"><option value="">All customer types</option>${options(TYPES, typeFilter)}</select><select id="product-filter" aria-label="Filter by product category"><option value="">All product categories</option>${options(PRODUCT_CATEGORIES, productFilter)}</select><select id="stage-filter" aria-label="Filter by stage"><option value="">All stages</option>${options(STAGES, stageFilter)}</select></div><section class="panel"><div class="panel-head"><h2>Customer directory</h2><span class="subtitle" id="contact-count">${filteredContacts().length} leads</span></div><div id="contact-results">${groupedContactDirectory(filteredContacts())}</div></section><div class="callout">A lead is a potential customer. An opportunity is a qualified sales discussion. Use the sales stage to show how each relationship is progressing.</div>`
   );
 }
 function pipeline() {
@@ -537,7 +546,7 @@ document.addEventListener("input", (e) => {
   }
 });
 function updateContacts() {
-  $("#contact-results").innerHTML = contactTable(filteredContacts());
+  $("#contact-results").innerHTML = groupedContactDirectory(filteredContacts());
   $("#contact-count").textContent = `${filteredContacts().length} leads`;
 }
 document.addEventListener("change", (e) => {
